@@ -7,7 +7,6 @@ FE - Next.js + Tailwind CSS
 BE - Next.js with Server Actions
 Authentication - JWT Based Auth
 DB - MongoDB
-API Testing - Postman
 Deployment - Vercel
 
 -- Security Consideration --

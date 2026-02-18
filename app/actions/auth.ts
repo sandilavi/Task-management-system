@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+// Auth code for registration
 export async function register(prevState: any, formData: FormData) {
     await connectDB();
 
@@ -43,6 +44,7 @@ export async function register(prevState: any, formData: FormData) {
 }
 
 
+// Auth code for login
 export async function login(prevState: any, formData: FormData) {
     await connectDB();
 
@@ -75,4 +77,11 @@ export async function login(prevState: any, formData: FormData) {
     });
 
     redirect('/dashboard');
+}
+
+
+// Auth code for logout
+export async function logout() {
+  (await cookies()).delete('userId');
+  redirect('/login');
 }

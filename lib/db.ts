@@ -6,9 +6,7 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable in .env.local');
 }
 
-/* Use a global variable to store the connection so it persists 
-  during development hot-reloads. This prevents "Too many connections" errors.
-*/
+// Use a global variable to store the connection to prevent too many connections error
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
