@@ -19,9 +19,26 @@ export async function register(prevState: any, formData: FormData) {
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !confirmPassword) {
         return { error: 'Please fill in all fields' };
+    }
+
+    if (!/^[A-Za-z ]+$/.test(name)) {
+        return { error: 'Name should only contain letters and spaces' };
+    }
+
+    if (name.length > 50) {
+        return { error: 'Name must be 50 characters or less' };
+    }
+
+    if (password.length < 8) {
+        return { error: 'Password must be at least 8 characters' };
+    }
+
+    if (password !== confirmPassword) {
+        return { error: 'Passwords do not match' };
     }
 
     // Check if the user exists
@@ -64,6 +81,10 @@ export async function login(prevState: any, formData: FormData) {
 
     if (!email || !password) {
         return { error: 'Please fill in all fields' };
+    }
+
+    if (password.length < 8) {
+        return { error: 'Password must be at least 8 characters' };
     }
 
     // Find the user

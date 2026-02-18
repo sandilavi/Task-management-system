@@ -2,7 +2,7 @@ import { logout } from '@/app/actions/auth';
 import { createTask } from '@/app/actions/tasks';
 import SubmitButton from '@/app/components/submit-button';
 import connectDB from '@/lib/db';
-import { Task } from '@/lib/models';
+import { Task, User } from '@/lib/models';
 import { cookies } from 'next/headers';
 import TaskList from './task-list';
 
@@ -25,8 +25,16 @@ async function getTasks() {
   }));
 }
 
+async function getUser() {
+  await connectDB();
+  const userId = (await cookies()).get('userId')?.value;
+  if (!userId) return null;
+  const user = await User.findById(userId).lean() as { name: string; email: string } | null;
+  return user ? { name: user.name, email: user.email } : null;
+}
+
 export default async function DashboardPage() {
-  const tasks = await getTasks();
+  const [tasks, user] = await Promise.all([getTasks(), getUser()]);
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8">
@@ -36,7 +44,12 @@ export default async function DashboardPage() {
         <div className="flex items-center justify-between rounded-xl bg-white p-6 shadow-lg">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Your Tasks</h1>
-            <p className="mt-1 text-sm text-gray-500">Manage and track your work</p>
+            {user && (
+              <div className="mt-1">
+                <p className="text-sm font-medium text-gray-700">{user.name}</p>
+                <p className="text-xs text-gray-400">{user.email}</p>
+              </div>
+            )}
           </div>
           <form action={logout}>
             <SubmitButton
@@ -55,6 +68,7 @@ export default async function DashboardPage() {
               name="title"
               placeholder="Task title..."
               required
+              maxLength={200}
               className="flex-1 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
             <SubmitButton

@@ -14,6 +14,7 @@ export async function createTask(formData: FormData) {
 
     if (!userId) throw new Error('Unauthorized');
     if (!title) throw new Error('Title is required');
+    if (title.length > 200) throw new Error('Title must be 200 characters or less');
 
     await Task.create({ title, userId });
 
@@ -51,6 +52,7 @@ export async function updateTaskTitle(formData: FormData) {
 
     if (!userId) throw new Error('Unauthorized');
     if (!title?.trim()) throw new Error('Title is required');
+    if (title.trim().length > 200) throw new Error('Title must be 200 characters or less');
 
     // Ensure the task belongs to the logged-in user before updating
     await Task.findOneAndUpdate(

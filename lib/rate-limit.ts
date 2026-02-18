@@ -6,7 +6,7 @@ interface RateLimitOptions {
 }
 
 export function checkRateLimit(ip: string, options: RateLimitOptions): { blocked: boolean } {
-    // Only enforce in production — local dev is never blocked
+    // Only applies the rate limiting on production
     if (process.env.NODE_ENV !== 'production') {
         return { blocked: false };
     }
@@ -23,7 +23,7 @@ export function checkRateLimit(ip: string, options: RateLimitOptions): { blocked
         return { blocked: true };
     }
 
-    // Record this attempt
+    // Record the attempt
     recent.push(now);
     attemptStore.set(ip, recent);
 
