@@ -1,5 +1,6 @@
 import { logout } from '@/app/actions/auth';
 import { createTask } from '@/app/actions/tasks';
+import SubmitButton from '@/app/components/submit-button';
 import connectDB from '@/lib/db';
 import { Task } from '@/lib/models';
 import { cookies } from 'next/headers';
@@ -38,12 +39,11 @@ export default async function DashboardPage() {
             <p className="mt-1 text-sm text-gray-500">Manage and track your work</p>
           </div>
           <form action={logout}>
-            <button
-              type="submit"
-              className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+            <SubmitButton
+              label="Logout"
+              pendingLabel="Logging out..."
+              className="rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600"
+            />
           </form>
         </div>
 
@@ -57,12 +57,11 @@ export default async function DashboardPage() {
               required
               className="flex-1 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
-            <button
-              type="submit"
-              className="rounded-md bg-indigo-600 px-6 py-2 text-white font-medium hover:bg-indigo-500 transition"
-            >
-              Add Task
-            </button>
+            <SubmitButton
+              label="Add Task"
+              pendingLabel="Adding..."
+              className="rounded-md bg-indigo-600 px-6 py-2 text-white font-medium hover:bg-indigo-500"
+            />
           </form>
         </div>
 

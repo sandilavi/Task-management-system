@@ -2,12 +2,18 @@
 
 import connectDB from '@/lib/db';
 import { User } from '@/lib/models';
+import { checkRateLimit } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 // Auth code for registration
 export async function register(prevState: any, formData: FormData) {
+    // Rate limit: max 10 registration attempts per IP per hour
+    const ip = (await headers()).get('x-forwarded-for') ?? 'unknown';
+    const { blocked } = checkRateLimit(ip, { maxAttempts: 10, windowMs: 60 * 60 * 1000 });
+    if (blocked) return { error: 'Too many attempts. Please try again later.' };
+
     await connectDB();
 
     const name = formData.get('name') as string;
@@ -46,6 +52,11 @@ export async function register(prevState: any, formData: FormData) {
 
 // Auth code for login
 export async function login(prevState: any, formData: FormData) {
+    // Rate limit: max 5 login attempts per IP per 15 minutes
+    const ip = (await headers()).get('x-forwarded-for') ?? 'unknown';
+    const { blocked } = checkRateLimit(ip, { maxAttempts: 5, windowMs: 15 * 60 * 1000 });
+    if (blocked) return { error: 'Too many login attempts. Please try again in 15 minutes.' };
+
     await connectDB();
 
     const email = formData.get('email') as string;
@@ -82,6 +93,6 @@ export async function login(prevState: any, formData: FormData) {
 
 // Auth code for logout
 export async function logout() {
-  (await cookies()).delete('userId');
-  redirect('/login');
+    (await cookies()).delete('userId');
+    redirect('/login');
 }

@@ -1,19 +1,66 @@
--- BE Choice Justifation --
-BE Choice - Next.js with server actions
-Reason - Use Next.js for both FE and BE ensures seamless commnication between FE and BE whcih allows for a rapid development.
+# PLAN.md – Task Management System
 
--- Architecture Overview --
-FE - Next.js + Tailwind CSS
-BE - Next.js with Server Actions
-Authentication - JWT Based Auth
-DB - MongoDB
-Deployment - Vercel
+---
 
--- Security Consideration --
-Password Hashing - Use bcrypt to hash password before storage.
-Middleware Setup - Setting up middleware file to prevent unauthorized access.
-Authorization Logic - Ensured the routes are protected where users can do CRUD operations for their own tasks.
+## Backend Choice Justification
 
--- DB Schema --
-User - id(string), name(string), email(string), password(string)
-Tasks - id(string), name(string), userId(string), createdAt(date)
+**Chosen:** Next.js Server Actions (Full-stack Next.js)
+
+Next.js Server Actions were chosen over Express.js or NestJS for the following reasons:
+
+- **Unified codebase** — Frontend and backend live in the same project, eliminating the need for a separate API server, CORS configuration, or inter-service communication overhead.
+- **Type safety end-to-end** — Server actions are typed TypeScript functions called directly from components, removing the need for manual API contract maintenance.
+- **Built-in security** — Server actions only execute on the server; no business logic or DB credentials are ever exposed to the client.
+- **Rapid development** — Ideal for a time-constrained assessment where shipping a working, secure product quickly is the priority.
+
+---
+
+## Architecture Overview
+
+```
+Client (Browser)
+    │
+    ▼
+Next.js App Router (Frontend)
+    │  Server Actions
+    ▼
+Business Logic Layer (app/actions/)
+    │  auth.ts  →  register, login, logout
+    │  tasks.ts →  createTask, updateTaskTitle, updateTaskStatus, deleteTask
+    ▼
+Mongoose ODM
+    ▼
+MongoDB Atlas (Cloud Database)
+```
+
+**Key components:**
+- `middleware.ts` — Route guard; redirects unauthenticated users away from `/dashboard` and authenticated users away from auth pages
+- `lib/db.ts` — Singleton MongoDB connection with caching to prevent connection pool exhaustion during hot-reloads
+- `lib/models.ts` — Mongoose schemas for `User` and `Task`
+
+---
+
+## Security Considerations
+
+| Risk | Mitigation |
+|---|---|
+| Password exposure | bcrypt hashing before storage |
+| Session hijacking | httpOnly cookie (inaccessible to JavaScript) |
+| CSRF attacks | Server Actions use POST by default |
+| Unauthorized data access | Users can only modify their own tasks |
+| Stack trace leaks | Errors return user-friendly messages |
+| Secret exposure | `.env` is git-ignored |
+
+---
+
+## DB Schema
+
+**User**
+```
+_id, name, email (unique), password (hashed), createdAt, updatedAt
+```
+
+**Task**
+```
+_id, userId (ref: User), title, status (pending | completed), createdAt, updatedAt
+```

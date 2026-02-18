@@ -1,6 +1,7 @@
 'use client';
 
 import { register } from '@/app/actions/auth';
+import SubmitButton from '@/app/components/submit-button';
 import Link from 'next/link';
 import { useActionState } from 'react';
 
@@ -55,12 +56,11 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <button
-              type="submit"
+            <SubmitButton
+              label="Sign up"
+              pendingLabel="Creating account..."
               className="group relative flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Sign up
-            </button>
+            />
           </div>
         </form>
 
